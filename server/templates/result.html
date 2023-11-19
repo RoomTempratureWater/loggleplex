@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log Entries</title>
+</head>
+<body>
+
+{% if log_entries %}
+<div class="json-item">
+  <pre>
+  {% for log_entry in log_entries %}
+    {{ log_entry|tojson(indent=2) }}
+  {% endfor %}
+  </pre>
+
+<label for="fileName">File Name:</label>
+<input type="text" id="fileName" value="query_result">
+
+<button onclick="downloadAllJson()">Download All JSON</button>
+</div>
+{% else %}
+  <h1>NO DATA</h1>
+{% endif %}
+
+</body>
+<script>
+  function downloadAllJson() {
+  const allJsonData = [];
+
+  // Iterate over each JSON item on the screen
+  document.querySelectorAll('.json-item pre').forEach(jsonElement => {
+    var jsonData = JSON.stringify(jsonElement.innerText);
+    jsonData = JSON.parse(jsonData);
+    allJsonData.push(jsonData);
+  });
+  console.log(allJsonData);
+  const fileName = document.getElementById('fileName').value || 'query_result';
+  var combinedJson = JSON.stringify(allJsonData, null, '\t');
+  combinedJson = JSON.parse(combinedJson);
+  const blob = new Blob([combinedJson], { type: 'application/json' });
+
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `${fileName}.json`;
+
+  // Append the link to the DOM and simulate a click to trigger the download
+  document.body.appendChild(link);
+  link.click();
+
+  // Remove the link from the DOM
+  document.body.removeChild(link);
+}
+</script>
+</html>
