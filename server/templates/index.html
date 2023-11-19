@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiple File Upload with htmx</title>
+    <script src="https://unpkg.com/htmx.org@1.7.0/dist/htmx.js"></script>
+</head>
+<body>
+
+<h1>Log file upload</h1>
+
+<form hx-encoding='multipart/form-data' hx-post='/upload'
+          _='on htmx:xhr:progress(loaded, total) set #progress.value to (loaded/total)*100' enctype="multipart/form-data">
+          <input type="file" id="fileInput" name="files" multiple>
+        <button>
+            Upload
+        </button>
+        <progress id='progress' value='0' max='100'></progress>
+    </form>
+<a href="/ui">Go to query builder</a>
+</body>
+<script>
+    document.getElementById('fileInput').addEventListener('change', function() {
+        // Update the label with the selected file names
+        const fileNamesElement = document.getElementById('fileNames');
+        fileNamesElement.innerHTML = '';
+        for (const file of this.files) {
+            const fileNameElement = document.createElement('div');
+            fileNameElement.textContent = file.name;
+            fileNamesElement.appendChild(fileNameElement);
+        }
+        
+        // Trigger file upload on file selection
+        this.parentElement.submit();
+    });
+</script>
+
+
+</html>
